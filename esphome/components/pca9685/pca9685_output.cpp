@@ -31,7 +31,15 @@ void PCA9685Output::setup() {
     this->mark_failed();
     return;
   }
-  if (!this->write_byte(PCA9685_REGISTER_MODE2, this->mode_)) {
+
+  uint8_t mode2 = PCA9685_MODE_OUTPUT_ONACK;
+  if (this->inverted_) {
+    mode2 |= PCA9685_MODE_INVERTED;
+  }
+  if (this->totem_pole_) {
+    mode2 |= PCA9685_MODE_OUTPUT_TOTEM_POLE;
+  }
+  if (!this->write_byte(PCA9685_REGISTER_MODE2, mode2)) {
     this->mark_failed();
     return;
   }
@@ -76,10 +84,9 @@ void PCA9685Output::setup() {
 }
 
 void PCA9685Output::dump_config() {
-  ESP_LOGCONFIG(TAG,
-                "PCA9685:\n"
-                "  Mode: 0x%02X",
-                this->mode_);
+  ESP_LOGCONFIG(TAG, "PCA9685:");
+  ESP_LOGCONFIG(TAG, "  Inverted: %d", this->inverted_);
+  ESP_LOGCONFIG(TAG, "  Totem Pole: %d", this->totem_pole_);
   if (this->extclk_) {
     ESP_LOGCONFIG(TAG, "  EXTCLK: enabled");
   } else {

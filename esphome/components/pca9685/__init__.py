@@ -5,9 +5,12 @@ from esphome.const import (
     CONF_EXTERNAL_CLOCK_INPUT,
     CONF_FREQUENCY,
     CONF_ID,
+    CONF_INVERTED,
     CONF_PHASE_BALANCER,
 )
 from esphome.types import ConfigType
+
+# from esphome.components.const import CONF_TOTEM_POLE
 
 DEPENDENCIES = ["i2c"]
 MULTI_CONF = True
@@ -45,6 +48,9 @@ CONFIG_SCHEMA = cv.All(
             cv.Optional(CONF_PHASE_BALANCER, default="linear"): cv.enum(
                 PHASE_BALANCERS
             ),
+            cv.Optional(CONF_INVERTED, default=False): cv.boolean,
+            # cv.Optional(CONF_TOTEM_POLE, default=True): cv.boolean,
+            cv.Optional("totem_pole", default=True): cv.boolean,
         }
     )
     .extend(cv.COMPONENT_SCHEMA)
@@ -59,5 +65,8 @@ async def to_code(config: ConfigType) -> None:
         cg.add(var.set_frequency(config[CONF_FREQUENCY]))
     cg.add(var.set_extclk(config[CONF_EXTERNAL_CLOCK_INPUT]))
     cg.add(var.set_phase_balancer(config[CONF_PHASE_BALANCER]))
+    cg.add(var.set_inverted(config[CONF_INVERTED]))
+    # cg.add(var.set_totem_pole(config[CONF_TOTEM_POLE]))
+    cg.add(var.set_totem_pole(config["totem_pole"]))
     await cg.register_component(var, config)
     await i2c.register_i2c_device(var, config)

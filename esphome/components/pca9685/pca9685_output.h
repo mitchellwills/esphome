@@ -41,7 +41,7 @@ class PCA9685Channel final : public output::FloatOutput {
 /// PCA9685 float output component.
 class PCA9685Output final : public Component, public i2c::I2CDevice {
  public:
-  PCA9685Output(uint8_t mode = PCA9685_MODE_OUTPUT_ONACK | PCA9685_MODE_OUTPUT_TOTEM_POLE) : mode_(mode) {}
+  PCA9685Output() {}
 
   void register_channel(PCA9685Channel *channel);
 
@@ -52,6 +52,8 @@ class PCA9685Output final : public Component, public i2c::I2CDevice {
   void set_extclk(bool extclk) { this->extclk_ = extclk; }
   void set_frequency(float frequency) { this->frequency_ = frequency; }
   void set_phase_balancer(PhaseBalancer balancer) { this->balancer_ = balancer; }
+  void set_inverted(bool inverted) { this->inverted_ = inverted; }
+  void set_totem_pole(bool totem_pole) { this->totem_pole_ = totem_pole; }
 
  protected:
   friend PCA9685Channel;
@@ -63,9 +65,10 @@ class PCA9685Output final : public Component, public i2c::I2CDevice {
   }
 
   float frequency_;
-  uint8_t mode_;
   bool extclk_ = false;
   PhaseBalancer balancer_ = PhaseBalancer::LINEAR;
+  bool inverted_ = false;
+  bool totem_pole_ = true;
 
   uint8_t min_channel_{0xFF};
   uint8_t max_channel_{0x00};
